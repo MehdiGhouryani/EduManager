@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}داشبورد من{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>سلام، {{ student.get_full_name|default:user.username }} 👋</h3>
+                <p class="text-muted">به پنل کاربری خود خوش آمدید. در اینجا می‌توانید دوره‌های خود را مدیریت کنید.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mt-4">📚 دوره‌های من</h4>
+<div class="row">
+    {% for course in courses %}
+        <div class="col-md-4">
+            <div class="card course-card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    <p><i class="fas fa-chalkboard-user"></i> مدرس: {{ course.instructor }}</p>
+                    <a href="{% url 'course_detail' course.slug %}" class="btn btn-primary">ورود به دوره</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">شما هنوز در هیچ دوره‌ای ثبت‌نام نکرده‌اید. <a href="{% url 'course_list' %}">مشاهده دوره‌ها</a></div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
