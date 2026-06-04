@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}ورود به سامانه{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>🔐 ورود به حساب کاربری</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary w-100">ورود</button>
+                </form>
+                <hr>
+                <p class="text-center">حساب کاربری ندارید؟ <a href="{% url 'register' %}">ثبت‌نام کنید</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

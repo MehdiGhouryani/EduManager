@@ -4,26 +4,27 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-body">
                 <h2>{{ course.title }}</h2>
                 <hr>
-                <p>{{ course.description }}</p>
-                <div class="row mt-3">
-                    <div class="col-md-4"><i class="fas fa-chalkboard-user"></i> مدرس: {{ course.instructor }}</div>
-                    <div class="col-md-4"><i class="fas fa-calendar-alt"></i> شروع: {{ course.start_date|default:"نامشخص" }}</div>
-                    <div class="col-md-4"><i class="fas fa-users"></i> ظرفیت: {{ course.students.count }}/{{ course.capacity }}</div>
-                </div>
+                <p>{{ course.description|linebreaks }}</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-user-tie"></i> مدرس: {{ course.instructor }}</li>
+                    <li><i class="fas fa-calendar"></i> شروع: {{ course.start_date|default:"نامشخص" }}</li>
+                    <li><i class="fas fa-calendar-alt"></i> پایان: {{ course.end_date|default:"نامشخص" }}</li>
+                    <li><i class="fas fa-users"></i> تعداد دانشجو: {{ course.students.count }} / {{ course.capacity }}</li>
+                </ul>
 
                 {% if not is_enrolled %}
                     {% if course.is_full %}
-                        <div class="alert alert-danger mt-3">⛔ متأسفانه ظرفیت این دوره تکمیل شده است.</div>
+                        <div class="alert alert-danger">ظرفیت دوره تکمیل شده، امکان ثبت‌نام نیست.</div>
                     {% else %}
-                        <a href="{% url 'enroll_course' course.slug %}" class="btn btn-success mt-3">ثبت‌نام در دوره</a>
+                        <a href="{% url 'enroll_course' course.slug %}" class="btn btn-success">ثبت‌نام در دوره</a>
                     {% endif %}
                 {% else %}
-                    <div class="alert alert-success mt-3">✅ شما در این دوره ثبت‌نام کرده‌اید.</div>
+                    <div class="alert alert-success">✅ شما در این دوره ثبت‌نام کرده‌اید.</div>
                 {% endif %}
             </div>
         </div>
@@ -34,20 +35,18 @@
                 <div class="card-body">
                     <div class="list-group">
                         {% for content in contents %}
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ content.title }}</strong>
-                                        {% if content.content_type == 'PDF' %}
-                                            <span class="badge bg-danger">PDF</span>
-                                        {% elif content.content_type == 'Video' %}
-                                            <span class="badge bg-info">ویدئو</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">متن</span>
-                                        {% endif %}
-                                    </div>
-                                    <a href="{% url 'view_content' content.id %}" class="btn btn-sm btn-outline-primary">مشاهده</a>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ content.title }}</strong>
+                                    {% if content.content_type == 'PDF' %}
+                                        <span class="badge bg-danger">PDF</span>
+                                    {% elif content.content_type == 'Video' %}
+                                        <span class="badge bg-info">ویدئو</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">متن</span>
+                                    {% endif %}
                                 </div>
+                                <a href="{% url 'view_content' content.id %}" class="btn btn-sm btn-outline-primary">مشاهده</a>
                             </div>
                         {% empty %}
                             <p class="text-muted">هنوز محتوایی برای این دوره اضافه نشده است.</p>

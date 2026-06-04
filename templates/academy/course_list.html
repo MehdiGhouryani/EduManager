@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}لیست دوره‌ها{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📚 همه دوره‌های آموزشی</h2>
+<div class="row">
+    {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <div class="card course-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text text-muted">{{ course.description|truncatewords:15 }}</p>
+                    <p><i class="fas fa-chalkboard-user"></i> {{ course.instructor }}</p>
+                    <p><i class="fas fa-users"></i> ظرفیت: {{ course.students.count }}/{{ course.capacity }}</p>
+                    <a href="{% url 'academy:course_detail' course.slug %}" class="btn btn-outline-primary">مشاهده دوره</a>   <!-- اصلاح شده -->
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning">هیچ دوره فعالی وجود ندارد.</div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
