@@ -1,31 +1,75 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}داشبورد من{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <h3>سلام، {{ student.get_full_name|default:user.username }} 👋</h3>
-        <p>به پنل کاربری خود خوش آمدید. در اینجا می‌توانید دوره‌های خود را پیگیری کنید.</p>
+<!-- خوش‌آمدگویی با کارت آمار -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card card-modern border-0 text-center p-3">
+            <div class="card-body">
+                <i class="fas fa-book-open fa-2x text-primary mb-2"></i>
+                <h3 class="fw-bold">{{ courses|length }}</h3>
+                <p class="text-muted mb-0">دوره فعال</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-modern border-0 text-center p-3">
+            <div class="card-body">
+                <i class="fas fa-tasks fa-2x text-primary mb-2"></i>
+                <h3 class="fw-bold">--</h3>
+                <p class="text-muted mb-0">تکلیف انجام شده</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-modern border-0 text-center p-3">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                <h3 class="fw-bold">--</h3>
+                <p class="text-muted mb-0">میانگین نمرات</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<h4 class="mt-4">دوره‌های ثبت‌نام شده من</h4>
-<div class="row">
+<!-- دوره‌های من -->
+<h4 class="fw-semibold mb-4"><i class="fas fa-graduation-cap me-2"></i>دوره‌های ثبت‌نام شده من</h4>
+<div class="row g-4">
     {% for course in courses %}
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5>{{ course.title }}</h5>
-                    <p>{{ course.instructor }}</p>
-                    <a href="{% url 'course_detail' course.slug %}" class="btn btn-sm btn-primary">ورود به دوره</a>
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-modern h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1">در حال یادگیری</span>
+                    <i class="fas fa-chalkboard-user text-muted"></i>
+                </div>
+                <h5 class="card-title fw-semibold">{{ course.title }}</h5>
+                <p class="card-text text-muted small">{{ course.description|truncatewords:15 }}</p>
+                <div class="mt-2">
+                    <i class="fas fa-user-tie"></i> {{ course.instructor.get_full_name|default:course.instructor.username }}
+                </div>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div class="progress-bar bg-primary" style="width: 0%;" role="progressbar"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-2 small text-muted">
+                    <span><i class="fas fa-file-alt"></i> 0/0 محتوا</span>
+                    <span><i class="fas fa-hourglass-half"></i> پیشرفت 0%</span>
                 </div>
             </div>
+            <div class="card-footer bg-transparent border-0 pb-4 pt-0">
+                <a href="{% url 'academy:course_detail' course.slug %}" class="btn btn-outline-primary w-100 rounded-pill">ورود به دوره <i class="fas fa-arrow-left me-1"></i></a>
+            </div>
         </div>
+    </div>
     {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">شما هنوز در هیچ دوره‌ای ثبت‌نام نکرده‌اید. <a href="{% url 'course_list' %}">مشاهده دوره‌ها</a></div>
-        </div>
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-database fa-3x text-muted mb-3"></i>
+        <p class="text-muted">شما هنوز در هیچ دوره‌ای ثبت‌نام نکرده‌اید.</p>
+        <a href="{% url 'academy:course_list' %}" class="btn btn-primary rounded-pill px-4">مشاهده دوره‌ها</a>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

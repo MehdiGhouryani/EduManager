@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Course, Student, Content
-from .forms import StudentRegistrationForm  # بعداً این فرم را می‌سازیم
+from .forms import StudentRegistrationForm
+
+def custom_logout(request):
+    """خروج از حساب کاربری با متد GET (برای راحتی)"""
+    logout(request)
+    return redirect('/')
 
 def register_student(request):
     if request.method == 'POST':
@@ -13,7 +18,7 @@ def register_student(request):
             user = form.save()
             login(request, user)
             messages.success(request, "ثبت‌نام با موفقیت انجام شد. خوش آمدید!")
-            return redirect('dashboard')
+            return redirect('academy:dashboard')
         else:
             messages.error(request, "لطفاً خطاها را اصلاح کنید.")
     else:
@@ -30,7 +35,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"خوش آمدید {username}.")
-                return redirect('dashboard')
+                return redirect('academy:dashboard')
         messages.error(request, "نام کاربری یا رمز عبور اشتباه است.")
     else:
         form = AuthenticationForm()
@@ -72,7 +77,7 @@ def enroll_course(request, slug):
     course = get_object_or_404(Course, slug=slug)
     if not hasattr(request.user, 'student'):
         messages.error(request, "ابتدا باید دانشجو باشید.")
-        return redirect('course_detail', slug=slug)
+        return redirect('academy:course_detail', slug=slug)
     student = request.user.student
     if student.enrolled_courses.filter(id=course.id).exists():
         messages.info(request, "شما قبلاً در این دوره ثبت‌نام کرده‌اید.")
@@ -81,13 +86,12 @@ def enroll_course(request, slug):
     else:
         student.enrolled_courses.add(course)
         messages.success(request, f"شما در دوره {course.title} ثبت‌نام شدید.")
-    return redirect('course_detail', slug=slug)
+    return redirect('academy:course_detail', slug=slug)
 
 @login_required
 def view_content(request, pk):
     content = get_object_or_404(Content, pk=pk)
-    # بررسی دسترسی: آیا دانشجو در دوره مربوطه ثبت‌نام کرده؟
     if not hasattr(request.user, 'student') or content.course not in request.user.student.enrolled_courses.all():
         messages.error(request, "شما دسترسی به این محتوا ندارید.")
-        return redirect('course_detail', slug=content.course.slug)
+        return redirect('academy:course_detail', slug=content.course.slug)
     return render(request, 'academy/view_content.html', {'content': content})

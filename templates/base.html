@@ -2,36 +2,108 @@
 <html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}سیستم مدیریت آموزشی EduManager{% endblock %}</title>
-    <!-- Bootstrap 5 RTL -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}پلتفرم آموزشی EduManager{% endblock %}</title>
+    <!-- Bootstrap 5 RTL + Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- فونت وزیر (اختیاری) اگر دوست دارید از فونت شیک‌تری استفاده کنید -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; font-family: 'Tahoma', sans-serif; }
-        .navbar-brand { font-weight: bold; }
-        .card { border-radius: 1rem; box-shadow: 0 0.2rem 0.5rem rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-        .course-card { transition: transform 0.2s; }
-        .course-card:hover { transform: translateY(-5px); }
-        .bg-soft-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        * { font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif; }
+        body {
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        /* نوار ناوبری شفاف با حاشیه پایین */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e9eef3;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #0f172a !important;
+            font-size: 1.4rem;
+        }
+        .navbar-brand i {
+            color: #3b82f6;
+            margin-left: 0.5rem;
+        }
+        .nav-link {
+            color: #334155 !important;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-link:hover {
+            color: #3b82f6 !important;
+        }
+        /* کارت‌های ساده با سایه ملایم */
+        .card-modern {
+            background: #ffffff;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card-modern:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.08);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: scale(1.02);
+        }
+        .btn-outline-primary {
+            border-radius: 40px;
+            border-width: 1.5px;
+        }
+        .footer {
+            background: white;
+            border-top: 1px solid #eef2f6;
+            color: #5b6e8c;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .badge-modern {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-soft-primary">
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="/">🎓 EduManager</a>
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap"></i> EduManager
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academy:course_list' %}">دوره‌ها</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'academy:course_list' %}">دوره‌ها</a></li>
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
+                        {% if user.profile.is_instructor %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'instructors:dashboard' %}">پنل استاد</a></li>
+                        {% endif %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'academy:dashboard' %}">پنل من</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'academy:logout' %}">خروج</a></li>
                     {% else %}
@@ -43,10 +115,10 @@
         </div>
     </nav>
 
-    <main class="container py-4">
+    <main class="container py-5">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-4" role="alert">
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -57,8 +129,10 @@
         {% endblock %}
     </main>
 
-    <footer class="text-center text-muted py-3 border-top mt-4">
-        <small>سیستم مدیریت آموزشی EduManager &copy; ۱۴۰۴</small>
+    <footer class="footer text-center py-4 mt-5">
+        <div class="container">
+            <small>© ۱۴۰۴ – پلتفرم مدیریت آموزشی EduManager | تمامی حقوق محفوظ است</small>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

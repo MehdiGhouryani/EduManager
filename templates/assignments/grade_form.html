@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}نمره‌دهی به {{ submission.student.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card card-modern">
+            <div class="card-body">
+                <h3 class="fw-bold">نمره‌دهی</h3>
+                <p><strong>دانشجو:</strong> {{ submission.student.get_full_name|default:submission.student.username }}</p>
+                <p><strong>تکلیف:</strong> {{ submission.assignment.title }}</p>
+                <p><strong>فایل ارسالی:</strong> <a href="{{ submission.file.url }}" target="_blank">مشاهده فایل</a></p>
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">نمره (از {{ submission.assignment.max_score }})</label>
+                        <input type="number" name="score" class="form-control" min="0" max="{{ submission.assignment.max_score }}" value="{{ submission.score|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">بازخورد</label>
+                        <textarea name="feedback" class="form-control" rows="4">{{ submission.feedback }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill w-100">ثبت نمره و بازخورد</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

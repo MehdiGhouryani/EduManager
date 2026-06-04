@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت تکالیف - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">تکالیف دوره {{ course.title }}</h2>
+    <a href="{% url 'assignments:create' course.id %}" class="btn btn-primary rounded-pill"><i class="fas fa-plus"></i> تکلیف جدید</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>عنوان</th>
+                <th>ددلاین</th>
+                <th>حداکثر نمره</th>
+                <th>تعداد ارسال</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in assignments %}
+            <tr>
+                <td>{{ a.title }}</td>
+                <td>{{ a.due_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ a.max_score }}</td>
+                <td>{{ a.submissions.count }}</td>
+                <td>
+                    <a href="{% url 'assignments:submissions' a.id %}" class="btn btn-sm btn-outline-info rounded-pill">ارسال‌ها</a>
+                    <a href="{% url 'assignments:edit' a.id %}" class="btn btn-sm btn-outline-warning rounded-pill">ویرایش</a>
+                    <a href="{% url 'assignments:delete' a.id %}" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('حذف شود؟')">حذف</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center">هیچ تکلیفی وجود ندارد.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

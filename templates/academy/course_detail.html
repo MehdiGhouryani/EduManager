@@ -11,7 +11,7 @@
                 <hr>
                 <p>{{ course.description|linebreaks }}</p>
                 <ul class="list-unstyled">
-                    <li><i class="fas fa-user-tie"></i> مدرس: {{ course.instructor }}</li>
+                    <li><i class="fas fa-user-tie"></i> مدرس: {{ course.instructor.get_full_name|default:course.instructor.username }}</li>
                     <li><i class="fas fa-calendar"></i> شروع: {{ course.start_date|default:"نامشخص" }}</li>
                     <li><i class="fas fa-calendar-alt"></i> پایان: {{ course.end_date|default:"نامشخص" }}</li>
                     <li><i class="fas fa-users"></i> تعداد دانشجو: {{ course.students.count }} / {{ course.capacity }}</li>
@@ -21,7 +21,7 @@
                     {% if course.is_full %}
                         <div class="alert alert-danger">ظرفیت دوره تکمیل شده، امکان ثبت‌نام نیست.</div>
                     {% else %}
-                        <a href="{% url 'enroll_course' course.slug %}" class="btn btn-success">ثبت‌نام در دوره</a>
+                        <a href="{% url 'academy:enroll_course' course.slug %}" class="btn btn-success">ثبت‌نام در دوره</a>
                     {% endif %}
                 {% else %}
                     <div class="alert alert-success">✅ شما در این دوره ثبت‌نام کرده‌اید.</div>
@@ -46,7 +46,7 @@
                                         <span class="badge bg-secondary">متن</span>
                                     {% endif %}
                                 </div>
-                                <a href="{% url 'view_content' content.id %}" class="btn btn-sm btn-outline-primary">مشاهده</a>
+                                <a href="{% url 'academy:view_content' content.id %}" class="btn btn-sm btn-outline-primary">مشاهده</a>
                             </div>
                         {% empty %}
                             <p class="text-muted">هنوز محتوایی برای این دوره اضافه نشده است.</p>

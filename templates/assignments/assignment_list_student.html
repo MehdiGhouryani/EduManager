@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}تکالیف {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold">تکالیف دوره {{ course.title }}</h2>
+    <a href="{% url 'academy:course_detail' course.slug %}" class="text-muted"><i class="fas fa-arrow-right"></i> بازگشت به دوره</a>
+</div>
+
+<div class="row g-4">
+    {% for assignment in assignments %}
+    <div class="col-md-6">
+        <div class="card card-modern h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title fw-semibold">{{ assignment.title }}</h5>
+                    {% if assignment.due_date < now %}
+                        <span class="badge bg-danger rounded-pill">گذشته</span>
+                    {% else %}
+                        <span class="badge bg-success rounded-pill">فعال</span>
+                    {% endif %}
+                </div>
+                <p class="card-text text-muted small">{{ assignment.description|truncatewords:30 }}</p>
+                <div class="mt-2">
+                    <i class="fas fa-clock"></i> ددلاین: {{ assignment.due_date|date:"Y-m-d H:i" }}
+                </div>
+                <div class="mt-1">
+                    <i class="fas fa-star"></i> حداکثر نمره: {{ assignment.max_score }}
+                </div>
+                {% with sub=submissions|get_item:assignment.id %}
+                    {% if sub %}
+                        <div class="alert alert-success mt-3 py-2">
+                            <i class="fas fa-check-circle"></i> ارسال شده در {{ sub.submitted_at|date:"Y-m-d" }}
+                            {% if sub.score is not None %}
+                                <br><strong>نمره: {{ sub.score }}</strong>
+                                {% if sub.feedback %}<br><small>بازخورد: {{ sub.feedback }}</small>{% endif %}
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="mt-3">
+                            <a href="{% url 'assignments:submit' assignment.id %}" class="btn btn-primary rounded-pill w-100">ارسال تکلیف</a>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <p class="text-muted">هیچ تکلیفی برای این دوره تعریف نشده است.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
