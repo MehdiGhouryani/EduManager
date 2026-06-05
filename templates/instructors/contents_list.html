@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت محتوا - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">محتواهای دوره {{ course.title }}</h2>
+    <a href="{% url 'instructors:content_create' course.id %}" class="btn btn-primary rounded-pill"><i class="fas fa-plus"></i> محتوای جدید</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>عنوان</th>
+                <th>نوع</th>
+                <th>ترتیب</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for content in contents %}
+            <tr>
+                <td>{{ content.title }}</td>
+                <td>
+                    {% if content.content_type == 'PDF' %}
+                        <span class="badge bg-danger">PDF</span>
+                    {% elif content.content_type == 'Video' %}
+                        <span class="badge bg-info">ویدئو</span>
+                    {% else %}
+                        <span class="badge bg-secondary">متن</span>
+                    {% endif %}
+                </td>
+                <td>{{ content.order }}</td>
+                <td>
+                    <a href="{% url 'instructors:content_edit' content.id %}" class="btn btn-sm btn-outline-warning rounded-pill">ویرایش</a>
+                    <a href="{% url 'instructors:content_delete' content.id %}" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('حذف شود؟')">حذف</a>
+                 </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">هیچ محتوایی وجود ندارد.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

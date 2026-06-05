@@ -5,17 +5,42 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h4>➕ ایجاد دوره جدید</h4>
-            </div>
+    <div class="col-md-6">
+        <div class="card card-modern">
             <div class="card-body">
+                <h3 class="fw-bold mb-3">دوره جدید</h3>
                 <form method="post">
                     {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" class="btn btn-success">ذخیره دوره</button>
-                    <a href="{% url 'instructors:dashboard' %}" class="btn btn-secondary">انصراف</a>
+                    <div class="mb-3">
+                        <label class="form-label">عنوان دوره</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">نامک (slug)</label>
+                        <input type="text" name="slug" class="form-control" required>
+                        <small class="text-muted">فقط حروف انگلیسی، اعداد و خط تیره</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">توضیحات</label>
+                        <textarea name="description" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ظرفیت</label>
+                        <input type="number" name="capacity" class="form-control" value="30">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاریخ شروع</label>
+                        <input type="date" name="start_date" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاریخ پایان</label>
+                        <input type="date" name="end_date" class="form-control">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" checked>
+                        <label class="form-check-label">فعال</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-pill w-100">ایجاد دوره</button>
                 </form>
             </div>
         </div>

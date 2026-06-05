@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}نتیجه آزمون{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card card-modern text-center">
+            <div class="card-body">
+                <i class="fas fa-chalkboard-user fa-3x text-primary mb-3"></i>
+                <h3 class="fw-bold">نتیجه آزمون {{ attempt.quiz.title }}</h3>
+                <p class="lead">نمره شما: <strong>{{ attempt.score|floatformat:1 }}</strong> از ۱۰۰</p>
+                <p class="text-muted">تاریخ انجام: {{ attempt.completed_at|date:"Y-m-d H:i" }}</p>
+                <a href="{% url 'academy:quiz_list_student' attempt.quiz.course.id %}" class="btn btn-outline-primary rounded-pill mt-3">بازگشت به لیست آزمون‌ها</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

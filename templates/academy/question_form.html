@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}سوال جدید{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card card-modern">
+            <div class="card-body">
+                <h3 class="fw-bold mb-3">سوال جدید برای آزمون {{ quiz.title }}</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary rounded-pill w-100 mt-3">ذخیره سوال</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

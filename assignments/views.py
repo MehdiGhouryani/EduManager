@@ -14,7 +14,7 @@ def assignment_list_instructor(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if not request.user.profile.is_instructor() or course.instructor != request.user:
         raise PermissionDenied()
-    assignments = course.assignments_set.all()
+    assignments = course.assignments.all()
     return render(request, 'assignments/assignment_list_instructor.html', {
         'course': course,
         'assignments': assignments,
@@ -86,7 +86,15 @@ def grade_submission(request, pk):
         submission.feedback = feedback
         submission.save()
         messages.success(request, "نمره و بازخورد ثبت شد.")
-        return redirect('assignments:submissions_for_assignment', pk=assignment.id)
+        from notifications.models import Notification
+
+
+        Notification.objects.create(
+            user=submission.student,
+            message=f"استاد {request.user.get_full_name()} به تکلیف '{assignment.title}' نمره {score} داد.",
+            link=f"/assignments/student/course/{assignment.course.id}/"
+        )
+        return redirect('assignments:submissions', pk=assignment.id)
     return render(request, 'assignments/grade_form.html', {'submission': submission})
 
 # ======================== ویوهای دانشجو ========================
@@ -96,9 +104,9 @@ def assignment_list_student(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if not request.user.profile.is_student():
         raise PermissionDenied()
-    if not course.students.filter(id=request.user.id).exists():
+    if not course.students.filter(user=request.user).exists():
         raise PermissionDenied()
-    assignments = course.assignments_set.all()
+    assignments = course.assignments.all()
     # بررسی ارسال‌های قبلی
     submissions = {sub.assignment_id: sub for sub in Submission.objects.filter(student=request.user, assignment__course=course)}
     return render(request, 'assignments/assignment_list_student.html', {
@@ -113,7 +121,7 @@ def submit_assignment(request, assignment_id):
     course = assignment.course
     if not request.user.profile.is_student():
         raise PermissionDenied()
-    if not course.students.filter(id=request.user.id).exists():
+    if not course.students.filter(user=request.user).exists():
         raise PermissionDenied()
     if Submission.objects.filter(assignment=assignment, student=request.user).exists():
         messages.error(request, "شما قبلاً برای این تکلیف فایل ارسال کرده‌اید.")

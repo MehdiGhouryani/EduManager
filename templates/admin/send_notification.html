@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div class="container">
+    <h2>ارسال اعلان به کاربران انتخاب شده</h2>
+    <p><strong>تعداد کاربران انتخاب شده:</strong> {{ users|length }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>متن اعلان:</label>
+            <textarea name="notification_message" rows="5" class="form-control" required style="width: 100%;"></textarea>
+        </div>
+        <div class="form-group">
+            <label>لینک اختیاری (مثل /dashboard/):</label>
+            <input type="text" name="notification_link" class="form-control" style="width: 100%;">
+        </div>
+        <div class="form-group">
+            <label>نوع رویداد (اختیاری):</label>
+            <input type="text" name="event_type" class="form-control" value="admin_announcement" style="width: 100%;">
+        </div>
+        <input type="hidden" name="apply" value="1">
+        <div style="margin-top: 20px;">
+            <button type="submit" class="button btn-primary">ارسال اعلان</button>
+            <a href="{% url 'admin:auth_user_changelist' %}" class="button">انصراف</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

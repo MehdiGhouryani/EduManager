@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}آزمون‌های دوره {{ course.title }}{% endblock %}
+
+{% block content %}
+<h2 class="fw-bold mb-4">آزمون‌های دوره {{ course.title }}</h2>
+
+<div class="row g-4">
+    {% for quiz in quizzes %}
+    <div class="col-md-6">
+        <div class="card card-modern h-100">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold">{{ quiz.title }}</h5>
+                <p class="card-text text-muted small">{{ quiz.description|truncatewords:30 }}</p>
+                <div><i class="fas fa-clock"></i> زمان مجاز: {% if quiz.time_limit %}{{ quiz.time_limit }} دقیقه{% else %}不限{% endif %}</div>
+                <div><i class="fas fa-question-circle"></i> تعداد سوالات: {{ quiz.questions.count }}</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pb-4 pt-0">
+                {% if quiz.id in attempted_ids %}
+                    <span class="badge bg-success rounded-pill">انجام شده</span>
+                {% else %}
+                    <a href="{% url 'academy:quiz_take' quiz.id %}" class="btn btn-primary rounded-pill w-100">شروع آزمون</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+        <p class="text-muted">هیچ آزمونی برای این دوره تعریف نشده است.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ class Assignment(models.Model):
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='assignment_items'   # یکتا، با 'assignments' و 'quizzes' و 'contents' تداخل ندارد
+        related_name='assignments'   # یکتا، با 'assignments' و 'quizzes' و 'contents' تداخل ندارد
     )
     title = models.CharField(max_length=200)
     description = models.TextField()

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}اعلان‌های من{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-4">اعلان‌ها</h2>
+<a href="?mark_read=1" class="btn btn-sm btn-secondary mb-3">همه را خوانده شده علامت بزن</a>
+<div class="list-group">
+    {% for notif in notifications %}
+        <div class="list-group-item {% if not notif.is_read %}list-group-item-primary{% endif %}">
+            <p>{{ notif.message }}</p>
+            <small class="text-muted">{{ notif.created_at|date:"Y-m-d H:i" }}</small>
+            {% if notif.link %}<a href="{{ notif.link }}" class="btn btn-sm btn-link">مشاهده</a>{% endif %}
+        </div>
+    {% empty %}
+        <p class="text-muted">هیچ اعلانی وجود ندارد.</p>
+    {% endfor %}
+</div>
+{% endblock %}

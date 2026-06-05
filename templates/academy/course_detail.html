@@ -1,60 +1,109 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ course.title }}{% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h2>{{ course.title }}</h2>
-                <hr>
-                <p>{{ course.description|linebreaks }}</p>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-user-tie"></i> مدرس: {{ course.instructor.get_full_name|default:course.instructor.username }}</li>
-                    <li><i class="fas fa-calendar"></i> شروع: {{ course.start_date|default:"نامشخص" }}</li>
-                    <li><i class="fas fa-calendar-alt"></i> پایان: {{ course.end_date|default:"نامشخص" }}</li>
-                    <li><i class="fas fa-users"></i> تعداد دانشجو: {{ course.students.count }} / {{ course.capacity }}</li>
-                </ul>
+    <div class="col-lg-8">
+        <ul class="nav nav-tabs mb-4" id="courseTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="content-tab" data-bs-toggle="tab" data-bs-target="#content" type="button">📄 محتواها</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button">📝 تکالیف ({{ assignments|length }})</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="quizzes-tab" data-bs-toggle="tab" data-bs-target="#quizzes" type="button">🧪 آزمون‌ها ({{ quizzes|length }})</button>
+            </li>
+        </ul>
 
-                {% if not is_enrolled %}
-                    {% if course.is_full %}
-                        <div class="alert alert-danger">ظرفیت دوره تکمیل شده، امکان ثبت‌نام نیست.</div>
-                    {% else %}
-                        <a href="{% url 'academy:enroll_course' course.slug %}" class="btn btn-success">ثبت‌نام در دوره</a>
-                    {% endif %}
-                {% else %}
-                    <div class="alert alert-success">✅ شما در این دوره ثبت‌نام کرده‌اید.</div>
-                {% endif %}
-            </div>
-        </div>
-
-        {% if is_enrolled %}
-            <div class="card mt-4">
-                <div class="card-header">📄 محتواهای دوره</div>
-                <div class="card-body">
-                    <div class="list-group">
-                        {% for content in contents %}
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ content.title }}</strong>
-                                    {% if content.content_type == 'PDF' %}
-                                        <span class="badge bg-danger">PDF</span>
-                                    {% elif content.content_type == 'Video' %}
-                                        <span class="badge bg-info">ویدئو</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">متن</span>
-                                    {% endif %}
+        <div class="tab-content">
+            <!-- تب محتواها -->
+            <div class="tab-pane fade show active" id="content" role="tabpanel">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        {% if is_enrolled %}
+                            <div class="list-group">
+                                {% for content in contents %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ content.title }}</strong>
+                                        {% if content.content_type == 'PDF' %}<span class="badge bg-danger">PDF</span>{% elif content.content_type == 'Video' %}<span class="badge bg-info">ویدئو</span>{% else %}<span class="badge bg-secondary">متن</span>{% endif %}
+                                    </div>
+                                    <a href="{% url 'academy:view_content' content.id %}" class="btn btn-sm btn-outline-primary rounded-pill">مشاهده</a>
                                 </div>
-                                <a href="{% url 'academy:view_content' content.id %}" class="btn btn-sm btn-outline-primary">مشاهده</a>
+                                {% empty %}<p class="text-muted">هنوز محتوایی اضافه نشده است.</p>{% endfor %}
                             </div>
-                        {% empty %}
-                            <p class="text-muted">هنوز محتوایی برای این دوره اضافه نشده است.</p>
-                        {% endfor %}
+                        {% else %}<div class="alert alert-warning">برای مشاهده محتواها ثبت‌نام کنید.</div>{% endif %}
                     </div>
                 </div>
             </div>
-        {% endif %}
+
+            <!-- تب تکالیف -->
+            <div class="tab-pane fade" id="assignments" role="tabpanel">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        {% if is_enrolled %}
+                            {% for assignment in assignments %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <h5>{{ assignment.title }}</h5>
+                                <p class="text-muted small">{{ assignment.description|truncatewords:30 }}</p>
+                                <div>ددلاین: {{ assignment.due_date|date:"Y-m-d H:i" }} | حداکثر نمره: {{ assignment.max_score }}</div>
+                                {% if assignment.id in submitted_ids %}
+                                    <span class="badge bg-success mt-2">ارسال شده</span>
+                                {% else %}
+                                    <a href="{% url 'assignments:submit' assignment.id %}" class="btn btn-sm btn-primary mt-2 rounded-pill">ارسال تکلیف</a>
+                                {% endif %}
+                            </div>
+                            {% empty %}<p class="text-muted">هیچ تکلیفی تعریف نشده است.</p>{% endfor %}
+                        {% else %}<div class="alert alert-warning">برای مشاهده تکالیف ثبت‌نام کنید.</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- تب آزمون‌ها -->
+            <div class="tab-pane fade" id="quizzes" role="tabpanel">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        {% if is_enrolled %}
+                            {% for quiz in quizzes %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <h5>{{ quiz.title }}</h5>
+                                <p class="text-muted small">{{ quiz.description|truncatewords:30 }}</p>
+                                <div>زمان مجاز: {% if quiz.time_limit %}{{ quiz.time_limit }} دقیقه{% else %}不限{% endif %} | سوالات: {{ quiz.questions.count }}</div>
+                                {% if quiz.id in quiz_attempted_ids %}
+                                    <span class="badge bg-success mt-2">انجام شده</span>
+                                {% else %}
+                                    <a href="{% url 'academy:quiz_take' quiz.id %}" class="btn btn-sm btn-primary mt-2 rounded-pill">شروع آزمون</a>
+                                {% endif %}
+                            </div>
+                            {% empty %}<p class="text-muted">هیچ آزمونی تعریف نشده است.</p>{% endfor %}
+                        {% else %}<div class="alert alert-warning">برای مشاهده آزمون‌ها ثبت‌نام کنید.</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- سایدبار پیشرفت -->
+    <div class="col-lg-4">
+        <div class="card card-modern">
+            <div class="card-body">
+                <h5 class="fw-bold">📊 پیشرفت شما</h5>
+                <hr>
+                {% if is_enrolled %}
+                    <div>تکالیف ارسال‌شده: {{ submitted_count }} از {{ assignments|length }}</div>
+                    <div class="progress mt-1 mb-3"><div class="progress-bar bg-primary" style="width: {% widthratio submitted_count assignments|length 100 %}%;"></div></div>
+                    <div>آزمون‌های انجام شده: {{ attempted_quizzes }} از {{ quizzes|length }}</div>
+                    <div class="progress mt-1 mb-3"><div class="progress-bar bg-info" style="width: {% widthratio attempted_quizzes quizzes|length 100 %}%;"></div></div>
+                    {% if avg_score %}<div>میانگین نمرات تکالیف: {{ avg_score|floatformat:1 }}</div>{% endif %}
+                {% else %}
+                    <div class="alert alert-info">برای مشاهده پیشرفت، ثبت‌نام کنید.</div>
+                    <a href="{% url 'academy:enroll_course' course.slug %}" class="btn btn-success w-100 rounded-pill">ثبت‌نام در دوره</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

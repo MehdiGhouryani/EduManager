@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}سوالات آزمون {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">سوالات آزمون {{ quiz.title }}</h2>
+    <a href="{% url 'academy:question_create' quiz.id %}" class="btn btn-primary rounded-pill"><i class="fas fa-plus"></i> سوال جدید</a>
+</div>
+
+<div class="list-group">
+    {% for question in questions %}
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div>
+            <strong>سوال {{ forloop.counter }}:</strong> {{ question.text|truncatewords:15 }}
+            <br><small class="text-muted">پاسخ صحیح: گزینه {{ question.correct_option }}</small>
+        </div>
+        <div>
+            <a href="{% url 'academy:question_edit' question.id %}" class="btn btn-sm btn-outline-warning rounded-pill">ویرایش</a>
+            <a href="{% url 'academy:question_delete' question.id %}" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('حذف شود؟')">حذف</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">هیچ سوالی تعریف نشده است. اولین سوال را اضافه کنید.</div>
+    {% endfor %}
+</div>
+{% endblock %}

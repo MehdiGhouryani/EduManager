@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}آزمون‌های دوره {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">آزمون‌های دوره {{ course.title }}</h2>
+    <a href="{% url 'academy:quiz_create' course.id %}" class="btn btn-primary rounded-pill"><i class="fas fa-plus"></i> آزمون جدید</a>
+</div>
+
+<div class="row g-4">
+    {% for quiz in quizzes %}
+    <div class="col-md-6">
+        <div class="card card-modern h-100">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold">{{ quiz.title }}</h5>
+                <p class="card-text text-muted small">{{ quiz.description|truncatewords:30 }}</p>
+                <div><i class="fas fa-clock"></i> زمان مجاز: {% if quiz.time_limit %}{{ quiz.time_limit }} دقیقه{% else %}不限{% endif %}</div>
+                <div><i class="fas fa-question-circle"></i> تعداد سوالات: {{ quiz.questions.count }}</div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pb-4 pt-0">
+                <div class="d-flex gap-2">
+                    <a href="{% url 'academy:quiz_questions' quiz.id %}" class="btn btn-outline-primary rounded-pill">مدیریت سوالات</a>
+                    <a href="{% url 'academy:quiz_results_instructor' quiz.id %}" class="btn btn-outline-info rounded-pill">نتایج</a>
+                    <a href="{% url 'academy:quiz_edit' quiz.id %}" class="btn btn-outline-warning rounded-pill">ویرایش</a>
+                    <a href="{% url 'academy:quiz_delete' quiz.id %}" class="btn btn-outline-danger rounded-pill" onclick="return confirm('حذف شود؟')">حذف</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+        <p class="text-muted">هیچ آزمونی ایجاد نشده است.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

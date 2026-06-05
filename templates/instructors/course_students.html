@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}دانشجویان دوره {{ course.title }}{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-4">دانشجویان دوره {{ course.title }}</h2>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr><th>نام دانشجو</th><th>ایمیل</th><th>تعداد ارسال‌ها</th><th>ارسال‌های نمره‌خورده</th><th>تعداد آزمون‌ها</th><th>میانگین نمرات (%)</th></tr>
+        </thead>
+        <tbody>
+            {% for data in students_data %}
+            <tr>
+                <td>{{ data.student.user.get_full_name|default:data.student.user.username }}</td>
+                <td>{{ data.student.user.email }}</td>
+                <td>{{ data.submissions_count }}</td>
+                <td>{{ data.submissions_graded }}</td>
+                <td>{{ data.quiz_attempts_count }}</td>
+                <td>{% if data.avg_score > 0 %}{{ data.avg_score }}{% else %}--{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center">هیچ دانشجویی در این دوره ثبت‌نام نکرده است.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
