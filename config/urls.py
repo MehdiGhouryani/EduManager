@@ -9,7 +9,8 @@ urlpatterns = [
     path('instructors/', include('instructors.urls')),
     path('assignments/', include('assignments.urls')), 
     path('accounts/', include('accounts.urls')),
-    path('password-reset/', include('django.contrib.auth.urls')),  
+    path('password-reset/', include('django.contrib.auth.urls')), 
+    path('notifications/', include('notifications.urls')), 
 ]
 
 if settings.DEBUG:
